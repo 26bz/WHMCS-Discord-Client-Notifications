@@ -80,6 +80,12 @@ class Discord implements NotificationModuleInterface
         ];
     }
     
+    public function getDynamicField($fieldName, $settings)
+    {
+        return [
+            'values' => [],
+        ];
+    }
 
     public function testConnection($settings)
     {
