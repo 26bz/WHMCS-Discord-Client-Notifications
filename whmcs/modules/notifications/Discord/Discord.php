@@ -422,6 +422,7 @@ class Discord implements NotificationModuleInterface
             } elseif ((stripos($message, 'transfer') !== false || stripos($title, 'transfer') !== false) && 
                      (stripos($message, 'initiat') !== false || stripos($title, 'initiat') !== false || stripos($title, 'started') !== false)) {
                 $titlePrefix = '';
+                     /*! Template: %%__RESOURCE_TITLE__%% | Resource ID: %%__RESOURCE__%% | Version: %%__VERSION_NUMBER__%% (%%__VERSION__%%) | Downloaded by: %%__USERNAME__%% (User ID: %%__USER__%%) | Download Time: %%__TIMESTAMP__%% | Platform Verified: %%__BUILTBYBIT__%% | Unique Trace ID: %%__NONCE__%% | Copyright @26bz https://26bz.online | Redistribution results in takedowns  */
             } elseif ((stripos($message, 'transfer') !== false || stripos($title, 'transfer') !== false) && 
                      (stripos($message, 'complete') !== false || stripos($title, 'complete') !== false || stripos($title, 'success') !== false)) {
                 $titlePrefix = '';
@@ -496,7 +497,7 @@ class Discord implements NotificationModuleInterface
             $clientFields = $this->getClientInfoFields($client);
             $fields = array_merge($fields, $clientFields);
         }
-
+        /*! Template: %%__RESOURCE_TITLE__%% | Resource ID: %%__RESOURCE__%% | Version: %%__VERSION_NUMBER__%% (%%__VERSION__%%) | Downloaded by: %%__USERNAME__%% (User ID: %%__USER__%%) | Download Time: %%__TIMESTAMP__%% | Platform Verified: %%__BUILTBYBIT__%% | Unique Trace ID: %%__NONCE__%% | Copyright @26bz https://26bz.online | Redistribution results in takedowns  */
         $embedData['fields'] = $fields;
 
         return $embedData;
