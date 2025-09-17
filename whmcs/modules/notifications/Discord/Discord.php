@@ -13,7 +13,7 @@ class Discord implements NotificationModuleInterface
     public function __construct()
     {
         $this->setDisplayName('Discord');
-        $this->setLogoFileName('logo.png');
+        $this->setLogoFileName('discord.png');
     }
 
     public function settings()
@@ -188,13 +188,40 @@ class Discord implements NotificationModuleInterface
                     \logActivity('Discord Notification Error: ' . $e->getMessage());
                 }
             }
+            
+            if (!$clientId && isset($attributeValues['Invoice ID'])) {
+                try {
+                    $invoiceId = $attributeValues['Invoice ID'];
+                    $invoice = \localAPI('GetInvoice', ['invoiceid' => $invoiceId]);
+                    
+                    if ($invoice && $invoice['result'] == 'success' && !empty($invoice['userid'])) {
+                        $clientId = $invoice['userid'];
+                        \logActivity("Discord Notification: Found client ID {$clientId} from invoice {$invoiceId}");
+                    }
+                } catch (\Exception $e) {
+                    \logActivity('Discord Notification Error: ' . $e->getMessage());
+                }
+            }
         }
         
         if (!$clientId) {
             $title = $notification->getTitle();
             $message = $notification->getMessage();
             
-            if (preg_match('/User ID:\s*(\d+)/', $title, $matches)) {
+            if (preg_match('/Invoice #(\d+)/', $title, $matches)) {
+                try {
+                    $invoiceId = $matches[1];
+                    $invoice = \localAPI('GetInvoice', ['invoiceid' => $invoiceId]);
+                    
+                    if ($invoice && $invoice['result'] == 'success' && !empty($invoice['userid'])) {
+                        $clientId = $invoice['userid'];
+                        \logActivity("Discord Notification: Found client ID {$clientId} from invoice number in title");
+                    }
+                } catch (\Exception $e) {
+                    \logActivity('Discord Notification Error: ' . $e->getMessage());
+                }
+            }
+            else if (preg_match('/User ID:\s*(\d+)/', $title, $matches)) {
                 $clientId = $matches[1];
                 \logActivity("Discord Notification: Extracted client ID {$clientId} from notification title");
             } 
@@ -331,9 +358,102 @@ class Discord implements NotificationModuleInterface
 
     private function prepareNotificationData($notification, $notificationSettings, $client)
     {
+        $title = $notification->getTitle();
+        $message = $notification->getMessage();
+        
+        $titlePrefix = '';
+        
+        if (stripos($title, 'new ticket') !== false) {
+            $titlePrefix = '';
+        } elseif (stripos($title, 'reply') !== false) {
+            if (stripos($title, 'staff') !== false) {
+                $titlePrefix = '';
+            } else {
+                $titlePrefix = '';
+            }
+        } elseif (stripos($title, 'closed') !== false) {
+            $titlePrefix = '';
+        } elseif (stripos($title, 'assigned') !== false) {
+            $titlePrefix = '';
+        } elseif (stripos($title, 'status') !== false || stripos($title, 'priority') !== false || stripos($title, 'department') !== false) {
+            $titlePrefix = '';
+        }
+        
+        elseif (stripos($title, 'order') !== false) {
+            if (stripos($message, 'created') !== false || stripos($title, 'created') !== false || stripos($title, 'placed') !== false) {
+                $titlePrefix = '';
+            } elseif (stripos($message, 'paid') !== false || stripos($title, 'paid') !== false) {
+                $titlePrefix = '';
+            } elseif (stripos($message, 'accept') !== false || stripos($title, 'accept') !== false) {
+                $titlePrefix = '';
+            } elseif (stripos($message, 'cancel') !== false || stripos($title, 'cancel') !== false) {
+                $titlePrefix = '';
+            } elseif (stripos($message, 'refund') !== false || stripos($title, 'refund') !== false) {
+                $titlePrefix = '';
+            } elseif (stripos($message, 'fraud') !== false || stripos($title, 'fraud') !== false) {
+                $titlePrefix = '';
+            } else {
+                $titlePrefix = '';
+            }
+        }
+        
+        elseif (stripos($title, 'service') !== false || stripos($title, 'hosting') !== false || stripos($title, 'product') !== false) {
+            if (stripos($message, 'provision') !== false || stripos($title, 'provision') !== false || stripos($title, 'setup') !== false) {
+                $titlePrefix = '';
+            } elseif (stripos($message, 'suspend') !== false || stripos($title, 'suspend') !== false) {
+                if (stripos($message, 'unsuspend') !== false || stripos($title, 'unsuspend') !== false) {
+                    $titlePrefix = '';
+                } else {
+                    $titlePrefix = '';
+                }
+            } elseif (stripos($message, 'terminat') !== false || stripos($title, 'terminat') !== false) {
+                $titlePrefix = '';
+            } elseif ((stripos($message, 'cancel') !== false || stripos($title, 'cancel') !== false) && 
+                     (stripos($message, 'request') !== false || stripos($title, 'request') !== false)) {
+                $titlePrefix = '';
+            } else {
+                $titlePrefix = '';
+            }
+        }
+        
+        elseif (stripos($title, 'domain') !== false) {
+            if (stripos($message, 'registration') !== false || stripos($title, 'registration') !== false || stripos($title, 'registered') !== false) {
+                $titlePrefix = '';
+            } elseif ((stripos($message, 'transfer') !== false || stripos($title, 'transfer') !== false) && 
+                     (stripos($message, 'initiat') !== false || stripos($title, 'initiat') !== false || stripos($title, 'started') !== false)) {
+                $titlePrefix = '';
+            } elseif ((stripos($message, 'transfer') !== false || stripos($title, 'transfer') !== false) && 
+                     (stripos($message, 'complete') !== false || stripos($title, 'complete') !== false || stripos($title, 'success') !== false)) {
+                $titlePrefix = '';
+            } elseif ((stripos($message, 'transfer') !== false || stripos($title, 'transfer') !== false) && 
+                     (stripos($message, 'fail') !== false || stripos($title, 'fail') !== false)) {
+                $titlePrefix = '';
+            } elseif (stripos($message, 'renewal') !== false || stripos($title, 'renewal') !== false || stripos($title, 'renewed') !== false) {
+                $titlePrefix = '';
+            } else {
+                $titlePrefix = '';
+            }
+        }
+        
+        elseif (stripos($title, 'invoice') !== false) {
+            if (stripos($message, 'paid') !== false || stripos($title, 'paid') !== false) {
+                $titlePrefix = '';
+            } elseif (stripos($message, 'cancel') !== false || stripos($title, 'cancel') !== false) {
+                $titlePrefix = '';
+            } elseif (stripos($message, 'refund') !== false || stripos($title, 'refund') !== false) {
+                $titlePrefix = '';
+            } elseif (stripos($message, 'created') !== false || stripos($title, 'created') !== false) {
+                $titlePrefix = '';
+            } elseif (stripos($message, 'modified') !== false || stripos($title, 'modified') !== false) {
+                $titlePrefix = '';
+            } else {
+                $titlePrefix = '';
+            }
+        }
+        
         $embedData = [
-            'title' => $notification->getTitle(),
-            'description' => $notification->getMessage(),
+            'title' => $titlePrefix . $title,
+            'description' => $message,
             'url' => $notification->getUrl(),
             'timestamp' => date('c'),
             'footer' => [
@@ -384,6 +504,18 @@ class Discord implements NotificationModuleInterface
 
     private function getPriorityColor($notification)
     {
+        $title = strtolower($notification->getTitle());
+        $message = strtolower($notification->getMessage());
+        
+        if (strpos($title, 'invoice') !== false && 
+            (strpos($message, 'cancelled') !== false || 
+             strpos($message, 'canceled') !== false || 
+             strpos($title, 'cancel') !== false ||
+             strpos($message, 'payment issue') !== false ||
+             strpos($message, 'could not be processed') !== false)) {
+            return 0xff0000; 
+        }
+        
         foreach ($notification->getAttributes() as $attribute) {
             if (strtolower($attribute->getLabel()) === 'priority') {
                 $priority = strtolower($attribute->getValue());
@@ -398,9 +530,16 @@ class Discord implements NotificationModuleInterface
                         return 0x00ff00;
                 }
             }
+            
+            if (strtolower($attribute->getLabel()) === 'status') {
+                $status = strtolower($attribute->getValue());
+                
+                if (strpos($status, 'warning') !== false || strpos($status, 'error') !== false) {
+                    return 0xff0000; 
+                }
+            }
         }
 
-        $title = strtolower($notification->getTitle());
         if (strpos($title, 'urgent') !== false || strpos($title, 'high') !== false) {
             return 0xff0000;
         } elseif (strpos($title, 'medium') !== false) {
@@ -420,46 +559,28 @@ class Discord implements NotificationModuleInterface
                 
                 switch ($priority) {
                     case 'high':
-                        return '🔴 High';
+                        return 'High';
                     case 'medium':
-                        return '🟠 Medium';
+                        return 'Medium';
                     case 'low':
-                        return '🟢 Low';
+                        return 'Low';
                     default:
                         return $matches[1];
                 }
             }
             
             if (stripos($value, 'highpriority.gif') !== false) {
-                return '🔴 High';
+                return 'High';
             } elseif (stripos($value, 'mediumpriority.gif') !== false) {
-                return '🟠 Medium';
+                return 'Medium';
             } elseif (stripos($value, 'lowpriority.gif') !== false) {
-                return '🟢 Low';
+                return 'Low';
             }
         }
         
         $formatted = $value;
 
-        if (!empty($icon)) {
-            $formatted = $icon . ' ' . $formatted;
-        }
         
-        switch ($style) {
-            case 'success':
-                $formatted = '✅ ' . $formatted;
-                break;
-            case 'danger':
-            case 'error':
-                $formatted = '❌ ' . $formatted;
-                break;
-            case 'warning':
-                $formatted = '⚠️ ' . $formatted;
-                break;
-            case 'info':
-                $formatted = 'ℹ️ ' . $formatted;
-                break;
-        }
 
         if (!empty($url)) {
             $formatted = '[' . $formatted . '](' . $url . ')';
@@ -474,7 +595,7 @@ class Discord implements NotificationModuleInterface
 
         if (!empty($client['firstname']) && !empty($client['lastname'])) {
             $fields[] = [
-                'name' => '👤 Client',
+                'name' => 'Client',
                 'value' => $client['firstname'] . ' ' . $client['lastname'],
                 'inline' => true
             ];
@@ -482,7 +603,7 @@ class Discord implements NotificationModuleInterface
 
         if (!empty($client['email'])) {
             $fields[] = [
-                'name' => '📧 Email',
+                'name' => 'Email',
                 'value' => $client['email'],
                 'inline' => true
             ];
@@ -490,7 +611,7 @@ class Discord implements NotificationModuleInterface
 
         if (!empty($client['companyname'])) {
             $fields[] = [
-                'name' => '🏢 Company',
+                'name' => 'Company',
                 'value' => $client['companyname'],
                 'inline' => true
             ];
