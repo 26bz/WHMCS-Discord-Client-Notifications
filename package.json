@@ -1,0 +1,27 @@
+{
+  "name": "whmcs-discord-notifications",
+  "version": "1.0.0",
+  "author": {
+    "name": "26BZ",
+    "url": "https://26bz.online",
+    "email": "contact@26bz.online"
+  },
+  "description": "Discord notification system for WHMCS events",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=16.9.0"
+  }
+}
