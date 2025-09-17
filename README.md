@@ -1,22 +1,51 @@
-# WHMCS Discord Notifications
+# WHMCS Discord Client Notifications
 
-Send WHMCS notifications directly to customers via Discord DMs with rich embeds and interactive buttons.
+A comprehensive Discord notification system for WHMCS that sends real-time notifications directly to your clients via Discord DMs.
+
+## ⚠️ Important Dependency
+
+**This addon requires our free [WHMCS Client Verification Addon](https://github.com/26bz/WHMCS-Discord-Client-Verification) to function properly.**
+
+The Client Verification addon provides:
+
+- **Discord Account Linking**: Links WHMCS client accounts to Discord users
+- **Role Assignment**: Automatically assigns Discord roles based on client status
+- **User Verification**: Ensures only verified clients receive notifications
+- **Account Security**: Prevents unauthorized access to client notifications
+
+**You must install and configure the Client Verification addon first before using this notification system.**
 
 ## Features
 
-- **Rich Discord Embeds** - Beautiful notifications with colors, buttons, and formatting
-- **Interactive Buttons** - Direct action buttons (View Ticket, Pay Invoice, etc.)
-- **Universal Support** - Works with all WHMCS events (tickets, invoices, services, etc.)
-- **Custom Hooks** - Easy integration for affiliate activations, withdrawals, and more
-- **Smart Detection** - Automatically finds Discord IDs and client information
+- **Direct Message Notifications**: Send notifications directly to clients' Discord DMs
+- **Rich Embed Support**: Beautiful, formatted Discord embeds with colors and fields
+- **Priority Color Coding**: Different colors based on ticket priority levels
+- **Comprehensive Event Support**: Tickets, invoices, orders, services, and domains
+- **Custom Hook Support**: Extensible with custom notification events
+- **Rate Limiting**: Built-in protection against spam
+- **Error Handling**: Robust error handling with detailed logging
+- **Health Monitoring**: Built-in health check endpoint for monitoring
 
 ## Requirements
 
-- WHMCS 8.x+
-- Node.js 16.9.0+
-- Discord bot token from [Discord Developer Portal](https://discord.com/developers/applications)
+- WHMCS 7.0+
+- Node.js 16+
+- Discord Bot Token
+- PHP 7.4+
+- **[WHMCS Client Verification Addon](https://github.com/26bz/WHMCS-Discord-Client-Verification)** (Required)
 
 ## Setup Guide
+
+### Step 0: Install Prerequisites
+
+**Before proceeding, you MUST install the Client Verification addon:**
+
+1. Download the [WHMCS Client Verification Addon](https://github.com/26bz/WHMCS-Discord-Client-Verification)
+2. Follow its installation and configuration guide
+3. Ensure Discord account linking is working properly
+4. Test that clients can verify their Discord accounts
+
+**Only proceed to Step 1 after the Client Verification addon is fully configured.**
 
 ### Step 1: Create Discord Bot
 
@@ -38,7 +67,7 @@ Send WHMCS notifications directly to customers via Discord DMs with rich embeds 
 1. **Install Dependencies:**
 
    ```bash
-   cd discord-bot
+   cd whmcs-discord-client-notifications
    npm install
    ```
 
@@ -88,13 +117,13 @@ Send WHMCS notifications directly to customers via Discord DMs with rich embeds 
    - Set:
      - **API URL**: `http://your-server:3000/api/send-dm`
      - **API Key**: Same as in your `.env` file
-     - **Discord ID Field**: `Discord ID` (custom field name)
+     - **Discord ID Field**: `discord` (custom field name)
    - Enable all desired features (Rich Embeds, Buttons, etc.)
 
 3. **Create Custom Field:**
    - Go to **Setup → Custom Client Fields**
    - Add new field:
-     - **Field Name**: `Discord ID`
+     - **Field Name**: `discord`
      - **Field Type**: Text Box
      - **Description**: Enter your Discord User ID
    - Save changes
@@ -188,6 +217,6 @@ Send WHMCS notifications directly to customers via Discord DMs with rich embeds 
 - Check WHMCS Activity Log for hook execution
 - Ensure notification rule exists with correct trigger identifier
 
-## License
+## Contact
 
-MIT License
+- Discord: https://26bz.online/discord/
