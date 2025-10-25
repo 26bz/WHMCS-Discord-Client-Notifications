@@ -1,10 +1,11 @@
 {
   "name": "whmcs-discord-notifications",
   "version": "1.0.0",
+  "license": "GPL-3.0-only",
   "author": {
-    "name": "26BZ",
-    "url": "https://26bz.online",
-    "email": "contact@26bz.online"
+    "name": "26bz",
+    "email": "26bz@proton.me",
+    "url": "https://26bz.online/"
   },
   "description": "Discord notification system for WHMCS events",
   "main": "index.js",

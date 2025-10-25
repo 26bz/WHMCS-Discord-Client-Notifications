@@ -1,3 +1,9 @@
+/*
+ * WHMCS Discord Client Notifications
+ * Copyright (C) 2025 26bz (https://26bz.online/)
+ * Licensed under GNU GPLv3 or later. See LICENSE file.
+ */
+
 require('dotenv').config();
 
 const { Client, GatewayIntentBits } = require('discord.js');
