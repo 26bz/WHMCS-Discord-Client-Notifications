@@ -80,7 +80,7 @@ app.post('/api/send-dm', limiter, async (req, res) => {
 
     return res.status(200).json({ success: true });
   } catch (error) {
-    console.error(`Error sending message to user ${discord_id}:`, error);
+    console.error('Error sending message to user: %s', discord_id, error);
 
     if (error.code === 50007) {
       return res.status(403).json({
